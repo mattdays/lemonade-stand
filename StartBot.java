@@ -15,47 +15,67 @@ public class StartBot implements Bot {
   private List<Integer> historyP1 = new ArrayList<>();
   private List<Integer> historyP2 = new ArrayList<>();
   private Integer roundNum = 1;
-  private float responseR = 0.75;
-  private float tol = 0.1;
-  private float pScale = 0.5;
+  private Float responseR = (float) 0.75;
+  private float tol = (float) 0.1;
+  private float pScale = (float) 0.5;
 
   private int minDist(int player1, int player2){
     int smaller = 0;
     int dist2 = 0;
     if(player1 > player2){
       smaller = player2;
-      dist2 = Math.abs(player1 - (12 + smaller))
+      dist2 = Math.abs(player1 - (12 + smaller));
     }
     else{
       smaller = player1;
-      dist2 = Math.abs(player2 - (12 + smaller))
+      dist2 = Math.abs(player2 - (12 + smaller));
     }
     int dist1 = Math.abs(player1 - player2);
-    return min(dist2, dist1);
+    return Math.min(dist2, dist1);
   }
 
   private float sumConst(){
     float sum = 0;
-    for(int k = 2; k < rounNum; k++) {
+    for(int k = 2; k < roundNum; k++) {
       sum += Math.pow(responseR, roundNum - 1 - k);
     }
     return sum;
   }
 
-  private float stickIndex(float sumConst){
+  private float stickIndex(float sumConst, int player){
     float sum = 0;
-    for(int k = 2; k < roundNum; k++){
-      sum += (Math.pow(responseR, roundNum - 1 - k) / sumConst) *
+    // Must do if check for which player to compare against
+    if(player == 0){
+      minD = minDist(historyP0[k], historyP0[k-1]);
+      minD = Math.pow(minD, pScale);
     }
+    else if(player == 1){
+      minD = minDist(historyP0[k], historyP0[k-1]);
+      minD = Math.pow(minD, pScale);
+    }
+    else{
+      minD = minDist(historyP1[k], historyP2[k-1]);
+      minD = Math.pow(minD, pScale);
+    }
+    for(int k = 2; k < roundNum; k++){
+      sum += (Math.pow(responseR, roundNum - 1 - k) / sumConst) * minDist(historyP1[k], historyP1[]);
+    }
+    return (float) 0.0;
+
   }
 
-  private float followIndex(float sumConst){
+  private float followIndex(float sumConst, int player){
+        // Must do if check for which player to compare against
 
+
+    return (float) 0.0;
 
   }
 
   private float followPair(float sumConst){
+        // Must do if check for which player to compare against
 
+    return (float) 0.0;
   }
 
 
@@ -76,7 +96,7 @@ public class StartBot implements Bot {
       recordHistory(player1LastMove, player2LastMove);
     }
 
-    nextMove = generator.nextInt(12) + 1;
+    int nextMove = generator.nextInt(12) + 1;
     historyP0.add(nextMove);
     return nextMove;
   }
@@ -99,7 +119,9 @@ public class StartBot implements Bot {
     System.out.println("h2" + historyP2);
   }
 
+  public static void main(String[] args) {
+    // int di
+    System.out.println("test");
+  }
 }
 
-public static void main(String[] args) {
-}

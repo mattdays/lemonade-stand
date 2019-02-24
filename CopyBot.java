@@ -1,11 +1,12 @@
 
 import java.util.Random;
 
-/** A Lemonade Stand game player that picks moves uniformly at random.
+/** A Lemonade Stand game player that picks a random opponent and mimics there
+  * last move played.
   * 
-  * @author RR
+  * @author MD, BR
   */
-public class RandomBot implements Bot {
+public class CopyBot implements Bot {
     private Random generator = new Random();
     
     /** Returns an action according to the mixed strategy that picks among 
@@ -19,7 +20,7 @@ public class RandomBot implements Bot {
       * @return the next action to play.
       */
     public int getNextMove(int player1LastMove, int player2LastMove) {
-        return generator.nextInt(12) + 1;
+        return (generator.nextBoolean()) ? (player1LastMove) : (player2LastMove);
     }
     
 }

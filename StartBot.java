@@ -11,8 +11,9 @@ import java.util.Random;
  */
 public class StartBot implements Bot {
   private Random generator = new Random();
-  private List<Byte> historyP1 = new ArrayList<>();
-  private List<Byte> historyP2 = new ArrayList<>();
+  private List<Integer> historyP1 = new ArrayList<>();
+  private List<Integer> historyP2 = new ArrayList<>();
+  private Integer numRounds = 0;
 
   /**
    * Returns an action according to the mixed strategy that picks among actions
@@ -26,6 +27,10 @@ public class StartBot implements Bot {
    * @return the next action to play.
    */
   public int getNextMove(int player1LastMove, int player2LastMove) {
+    if (numRounds > 1) {
+      recordHistory(player1LastMove, player2LastMove);
+    }
+    numRounds++;
     return generator.nextInt(12) + 1;
   }
 
@@ -41,8 +46,10 @@ public class StartBot implements Bot {
    * @return the next action to play.
    */
   public void recordHistory(int player1LastMove, int player2LastMove) {
-    historyP1.add((byte)(player1LastMove));
-    historyP2.add((byte)(player2LastMove));
+    historyP1.add((player1LastMove));
+    historyP2.add((player2LastMove));
+    System.out.println("h1" + historyP1);
+    System.out.println("h2" + historyP2);
   }
 
 }

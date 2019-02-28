@@ -48,7 +48,7 @@ public class StubbornBot implements Bot {
         if (this.roundCount > 0) {
           //Check utility based on previous
           utility = scoreRound(this.historyP0.get(this.historyP0.size() - 1), this.historyP1.get(this.historyP1.size() - 1), this.historyP2.get(this.historyP2.size() - 1));
-          if (utility < 7) {
+          if (utility < 8) {
             newPos = (this.historyP0.get(this.historyP0.size() - 1) + 4) % 12;
             if (newPos == 0) {
                 newPos = 12;

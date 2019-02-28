@@ -20,6 +20,9 @@ public class StartBot implements Bot {
   private double tol = 0.1;
   private double pScale = 0.5;
   private boolean stickCounter = false;
+  private boolean worstFlag = false;
+  private Integer worstTarget = null;
+  private Integer worstTarVal = null;
 
   public StartBot(){
     this.history.add(this.historyP0);
@@ -127,8 +130,26 @@ public class StartBot implements Bot {
     return sum;
   }
 
+  private int worstCase(int playerVal){
+    while(playerVal == this.worstTarVal){
+      return playerVal;
+    }
+    this.worstFlag = false;
+    return oppSide(playerVal);
+  }
+
   private int ea(int player1Last, int player2Last){
     int current = this.history.get(0).get(-1);
+
+    if(this.worstFlag){
+      if(this.worstTarget == 1){
+        return worstCase(player1Last);
+      }
+      else if(this.worstTarget == 2){
+        return worstCase(player2Last);
+      }
+
+    }
 
     if(this.stickCounter){
       return current;
@@ -205,18 +226,26 @@ public class StartBot implements Bot {
 
     //Carrot and Stick
     int opp1 = oppSide(player1Last);
-    // int size = this.historyP0.size();
-    // int[] a = new int[5];
-    // int[] b = new int[5];
-    // int val;
-    // int left = 0, right = 0;
     if(opp1 == player2Last){
+      this.worstFlag = true;
       if(f1 > f2){
+        this.worstTarget = 1;
+        this.worstTarVal = player1Last;
         return player1Last;
       }
       else{
+        this.worstTarget = 2;
+        this.worstTarVal = player2Last;
         return player2Last;
       }
+
+
+
+      // int size = this.historyP0.size();
+      // int[] a = new int[5];
+      // int[] b = new int[5];
+      // int val;
+      // int left = 0, right = 0;
     //   int bigger = Math.max(player1Last, player2Last);
     //   for(int i = 1; i < 6; i++){
     //     int temp1 = (bigger + i) % 12;

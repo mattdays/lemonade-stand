@@ -79,7 +79,7 @@ public class StartBot implements Bot {
 
   private double sumConst(){
     double sum = 0;
-    for(int k = 2; k < this.roundNum; k++) {
+    for(int k = 2; k < this.roundNum - 1; k++) {
       sum += Math.pow(responseR, this.roundNum - 1 - k);
     }
     return sum;
@@ -88,7 +88,6 @@ public class StartBot implements Bot {
   private double stickIndex(double sumConst, int player){
     double sum = 0;
     // Must do if check for which player to compare against
-    System.out.println("RoundNum: " + this.roundNum);
     for(int k = 2; k < this.roundNum - 1; k++){
       sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
                 Math.pow((minDist(history.get(player).get(k),
@@ -113,7 +112,7 @@ public class StartBot implements Bot {
     double sum = 0;
     int player2 = (player + 1) % 3;
     int player3 = (player + 2) % 3;
-    for(int k = 2; k < this.roundNum; k++){
+    for(int k = 2; k < this.roundNum - 1; k++){
       opp2 = oppSide(history.get(player2).get(k - 1));
       opp3 = oppSide(history.get(player3).get(k - 1));
       curr = history.get(player).get(k);
@@ -143,6 +142,7 @@ public class StartBot implements Bot {
     int size = this.history.get(0).size();
     int current = this.history.get(0).get(size - 1);
 
+
     if(this.worstFlag){
       if(this.worstTarget == 1){
         return worstCase(player1Last);
@@ -154,7 +154,11 @@ public class StartBot implements Bot {
     }
 
     if(this.stickCounter){
-      return current;
+      int utility = this.scoreRound(this.history.get(0).get(size - 1), this.history.get(1).get(size - 1), this.history.get(2).get(size - 1));
+      if(utility > 8){
+        return current;
+      }
+      this.stickCounter = false;
     }
 
     double constant = sumConst();
@@ -262,6 +266,8 @@ public class StartBot implements Bot {
       int nextMove = ea(player1LastMove, player2LastMove);
       history.get(0).add(nextMove);
       // historyP0.add(nextMove);
+      // System.out.println("ROUND: " + this.roundNum);
+      // System.out.println("Player 1: ");
       return nextMove;
     }
     recordHistory(player1LastMove, player2LastMove);

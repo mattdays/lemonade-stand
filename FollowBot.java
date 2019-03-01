@@ -6,9 +6,19 @@ import java.util.Random;
   * 
   * @author MD, BR
   */
-public class CopyBot implements Bot {
+public class FollowBot implements Bot {
     private Random generator = new Random();
-    
+
+    private int oppSide(int player){
+      if(player <= 6){
+        return player + 6;
+      }
+      else{
+        return player - 6;
+      }
+      // return (player + 6) % 12
+    }
+
     /** Returns an action according to the mixed strategy that picks among 
       * actions uniformly at random.
       * 
@@ -20,7 +30,12 @@ public class CopyBot implements Bot {
       * @return the next action to play.
       */
     public int getNextMove(int player1LastMove, int player2LastMove) {
-        return (generator.nextBoolean()) ? (player1LastMove) : (player2LastMove);
+      if (generator.nextBoolean()) {
+        return oppSide(2);
+      }
+      else{
+        return oppSide(1);
+      }
     }
     
 }

@@ -175,12 +175,24 @@ public class StartBot implements Bot {
       this.sumConstant += Math.pow(responseR, this.roundNum - 2 - 2);
     }
 
-    //calculate stick index
-    this.s1 *= this.responseR;
-    this.s1 += Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
-    this.s2 *= this.responseR;
-    this.s2 += Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
+    // System.out.println("history p1:" + history.get(1).size());
+    // System.out.println("RoundNum: " + this.roundNum);
 
+    //if roundNum <= 2:
+    if (roundNum >= 3) {
+      this.s1 *= this.responseR;
+      this.s1 += Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
+      this.s2 *= this.responseR;
+      this.s2 += Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
+  
+    }
+    // else {
+    // //calculate stick index
+    // this.s1 *= this.responseR;
+    // this.s1 += Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
+    // this.s2 *= this.responseR;
+    // this.s2 += Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
+    // }
     //calculate follow index
     followIndex(1);
     followIndex(2);
@@ -299,10 +311,26 @@ public class StartBot implements Bot {
       // System.out.println("Player 0: " + nextMove + " Previous-Player 1: " + player1LastMove + " Previous-Player 2: " + player2LastMove);
       // System.out.println("/////////////////////////////////////////////////////////");
       return nextMove;
+    } else if (this.roundNum == 2) {
+      recordHistory(player1LastMove, player2LastMove);
+      int utility = scoreRound(this.historyP0.get(this.historyP0.size() - 1),
+                    this.historyP1.get(this.historyP1.size() - 1), this.historyP2.get(this.historyP2.size() - 1));
+      int nextMove = this.generator.nextInt(12) + 1;
+      if (utility < 8) {
+        nextMove = (this.historyP0.get(this.historyP0.size() - 1) + 4) % 12;
+        if (nextMove == 0) {
+            nextMove = 12;
+        }
+      }
+      history.get(0).add(nextMove);
+      return nextMove;
+      
+    } else {
+      int nextMove = this.generator.nextInt(12) + 1;
+      recordHistory(player1LastMove, player2LastMove);
+      history.get(0).add(nextMove);
+      return nextMove;
     }
-    int nextMove = this.generator.nextInt(12) + 1;
-    history.get(0).add(nextMove);
-    return nextMove;
   }
 
   /**

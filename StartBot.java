@@ -16,16 +16,27 @@ public class StartBot implements Bot {
   private ArrayList<Integer> historyP2 = new ArrayList<>();
   private ArrayList<ArrayList<Integer>> history = new ArrayList<ArrayList<Integer>>();
   private Integer roundNum = 0;
-  private double responseR = 0.75;
-  private double tol = 0.1;
-  private double pScale = 0.5;
+  private float responseR = (float) 0.75;
+  private float tol = (float) 0.1;
+  private float pScale = (float) 0.5;
   private boolean stickCounter = false;
   private boolean worstFlag = false;
   private Integer worstTarget = null;
   private Integer worstTarVal = null;
-  private double sumConstant = 0;
+  private float sumConstant = 0;
+  private float s1 = 0;
+  private float s2 = 0;
+  private float f1 = 0;
+  private float f2 = 0;
+  private float f10 = 0;
+  private float f12 = 0;
+  private float f20 = 0;
+  private float f21 = 0;
 
   public StartBot(){
+    // this.historyP0.add(12);
+    // this.historyP1.add(12);
+    // this.historyP2.add(12);
     this.history.add(this.historyP0);
     this.history.add(this.historyP1);
     this.history.add(this.historyP2);
@@ -78,64 +89,57 @@ public class StartBot implements Bot {
     return Math.min(dist2, dist1);
   }
 
-  private double sumConst(int k){
-    if(k >= 2){
-      this.sumConstant += Math.pow(responseR, this.roundNum - 1 - k);
+  private void followPair(int player1, int player2){
+    int opp = oppSide(history.get(player2).get(this.roundNum - 2));
+    if((player1 == 1) && (player2 == 0)){
+      this.f10 *= this.responseR;
+      this.f10 += Math.pow((minDist(history.get(player1).get(this.roundNum - 2), opp)), this.pScale)
+                    / this.sumConstant;
     }
-    return this.sumConstant;
+    else if((player1 == 1) && (player2 == 2)){
+      this.f12 *= this.responseR;
+      this.f12 += Math.pow((minDist(history.get(player1).get(this.roundNum - 2), opp)), this.pScale)
+                    / this.sumConstant;
+    }
+    else if((player1 == 2) && (player2 == 0)){
+      this.f20 *= this.responseR;
+      this.f20 += Math.pow((minDist(history.get(player1).get(this.roundNum - 2), opp)), this.pScale)
+                    / this.sumConstant;
+    }
+    else if((player1 == 2) && (player2 == 1)){
+      this.f21 *= this.responseR;
+      this.f21 += Math.pow((minDist(history.get(player1).get(this.roundNum - 2), opp)), this.pScale)
+                    / this.sumConstant;
+    }
   }
 
-  private double test(){
-    double sum = 0;
-    for(int k = 2; k < this.roundNum - 1; k++) {
-      sum += Math.pow(responseR, this.roundNum - 1 - k);
-    }
-    return sum;
-  }
 
-  private double stickIndex(double sumConst, int player){
-    double sum = 0;
-    // Must do if check for which player to compare against
-    for(int k = 2; k < this.roundNum - 1; k++){
-      sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
-                Math.pow((minDist(history.get(player).get(k),
-                  history.get(player).get(k - 1))), this.pScale);
-    }
-    return sum;
-  }
-
-  private double followPair(double sumConst, int player1, int player2){
-    double sum = 0;
-    for(int k = 2; k < this.roundNum - 1; k++){
-      int opp = oppSide(history.get(player2).get(k - 1));
-      sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
-              Math.pow((minDist(history.get(player1).get(k), opp)), this.pScale);
-    }
-    return sum;
-
-  }
-
-  private double followIndex(double sumConst, int player){
-    int opp2, opp3, curr, minD, minD1, minD2;
-    double sum = 0;
+  private boolean followIndex(int player){
+    int opp2, opp3, current, minD, minD1, minD2;
+    float sum = 0;
+    current = history.get(player).get(this.roundNum - 2);
     int player2 = (player + 1) % 3;
     int player3 = (player + 2) % 3;
-    for(int k = 2; k < this.roundNum - 1; k++){
-      opp2 = oppSide(history.get(player2).get(k - 1));
-      opp3 = oppSide(history.get(player3).get(k - 1));
-      curr = history.get(player).get(k);
-      minD1 = minDist(curr, opp2);
-      minD2 = minDist(curr, opp3);
-      if(minD1 < minD2){
-        minD = minD1;
-      }
-      else{
-        minD = minD2;
-      }
-      sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
-                Math.pow(minD, this.pScale);
+    opp2 = oppSide(history.get(player2).get(roundNum - 2));
+    opp3 = oppSide(history.get(player3).get(roundNum - 2));
+    minD1 = minDist(current, opp2);
+    minD2 = minDist(current, opp3);
+    if(minD1 < minD2){
+      minD = minD1;
     }
-    return sum;
+    else{
+      minD = minD2;
+    }
+
+    if(player == 1){
+      this.f1 *= this.responseR;
+      this.f1 += Math.pow(minD, this.pScale) / this.sumConstant;
+    }
+    else if(player == 2){
+      this.f2 *= this.responseR;
+      this.f2 += Math.pow(minD, this.pScale) / this.sumConstant;
+    }
+    return true;
   }
 
   private int worstCase(int playerVal){
@@ -149,7 +153,6 @@ public class StartBot implements Bot {
   private int ea(int player1Last, int player2Last){
     int size = this.history.get(0).size();
     int current = this.history.get(0).get(size - 1);
-
 
     if(this.worstFlag){
       if(this.worstTarget == 1){
@@ -168,11 +171,25 @@ public class StartBot implements Bot {
       this.stickCounter = false;
     }
 
-    double constant = sumConst(this.roundNum);
-    double s1 = stickIndex(constant, 1);
-    double s2 = stickIndex(constant, 2);
-    double f1 = followIndex(constant, 1);
-    double f2 = followIndex(constant, 2);
+    if(this.roundNum >= 4){
+      this.sumConstant += Math.pow(responseR, this.roundNum - 2 - 2);
+    }
+
+    //calculate stick index
+    this.s1 *= this.responseR;
+    this.s1 += Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
+    this.s2 *= this.responseR;
+    this.s2 += Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
+
+    //calculate follow index
+    followIndex(1);
+    followIndex(2);
+
+    // float constant = sumConst(this.roundNum);
+    // float s1 = stickIndex(constant, 1);
+    // float s2 = stickIndex(constant, 2);
+    // float f1 = followIndex(constant, 1);
+    // float f2 = followIndex(constant, 2);
 
     //stick conditional
     if((s1 > (s2 + this.tol)) && (s1 > (f1 + this.tol)) && (s1 > (f2 + this.tol))){
@@ -204,12 +221,16 @@ public class StartBot implements Bot {
     }
 
     //follow conditional
-    double f01 = followPair(constant, 0, 1);
-    double f10 = followPair(constant, 1, 0);
-    double f02 = followPair(constant, 0, 2);
-    double f20 = followPair(constant, 2, 0);
-    double f12 = followPair(constant, 1, 2);
-    double f21 = followPair(constant, 2, 1);
+    followPair(1, 0);
+    followPair(1, 2);
+    followPair(2, 0);
+    followPair(2, 1);
+
+    // float f10 = followPair(constant, 1, 0);
+    // float f02 = followPair(constant, 0, 2);
+    // float f20 = followPair(constant, 2, 0);
+    // float f12 = followPair(constant, 1, 2);
+    // float f21 = followPair(constant, 2, 1);
     if((f1 > (s2 + this.tol)) && (f1 > (s1 + this.tol)) && (f1 > (f2 + this.tol))){
       if(f10 > f12){
         return current;
@@ -279,7 +300,6 @@ public class StartBot implements Bot {
       // System.out.println("/////////////////////////////////////////////////////////");
       return nextMove;
     }
-    recordHistory(player1LastMove, player2LastMove);
     int nextMove = this.generator.nextInt(12) + 1;
     history.get(0).add(nextMove);
     return nextMove;
@@ -306,21 +326,7 @@ public class StartBot implements Bot {
   public static void main(String[] args) {
     int test1 = 0, test2 = 1, test3 = 3;
     StartBot a = new StartBot();
-    a.roundNum++;
-    double b = a.test();
-    System.out.println("new: " + a.sumConstant + " old: " + b);
-    a.roundNum++;
-    b = a.test();
-    System.out.println("new: " + a.sumConstant + " old: " + b);
-    a.roundNum++;
-    b = a.test();
-    System.out.println("new: " + a.sumConstant + " old: " + b);
-    a.roundNum++;
-    b = a.test();
-    System.out.println("new: " + a.sumConstant + " old: " + b);
-    a.roundNum++;
-    b = a.test();
-    System.out.println("new: " + a.sumConstant + " old: " + b);
+
 
     // int a = bot.getNextMove(test1, test2);
     // System.out.println(bot.history.get(1).get(0));

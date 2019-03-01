@@ -23,6 +23,7 @@ public class StartBot implements Bot {
   private boolean worstFlag = false;
   private Integer worstTarget = null;
   private Integer worstTarVal = null;
+  private double sumConstant = 0;
 
   public StartBot(){
     this.history.add(this.historyP0);
@@ -77,7 +78,14 @@ public class StartBot implements Bot {
     return Math.min(dist2, dist1);
   }
 
-  private double sumConst(){
+  private double sumConst(int k){
+    if(k >= 2){
+      this.sumConstant += Math.pow(responseR, this.roundNum - 1 - k);
+    }
+    return this.sumConstant;
+  }
+
+  private double test(){
     double sum = 0;
     for(int k = 2; k < this.roundNum - 1; k++) {
       sum += Math.pow(responseR, this.roundNum - 1 - k);
@@ -150,7 +158,6 @@ public class StartBot implements Bot {
       else if(this.worstTarget == 2){
         return worstCase(player2Last);
       }
-
     }
 
     if(this.stickCounter){
@@ -161,7 +168,7 @@ public class StartBot implements Bot {
       this.stickCounter = false;
     }
 
-    double constant = sumConst();
+    double constant = sumConst(this.roundNum);
     double s1 = stickIndex(constant, 1);
     double s2 = stickIndex(constant, 2);
     double f1 = followIndex(constant, 1);
@@ -266,8 +273,10 @@ public class StartBot implements Bot {
       int nextMove = ea(player1LastMove, player2LastMove);
       history.get(0).add(nextMove);
       // historyP0.add(nextMove);
+      // System.out.println("/////////////////////////////////////////////////////////");
       // System.out.println("ROUND: " + this.roundNum);
-      // System.out.println("Player 1: ");
+      // System.out.println("Player 0: " + nextMove + " Previous-Player 1: " + player1LastMove + " Previous-Player 2: " + player2LastMove);
+      // System.out.println("/////////////////////////////////////////////////////////");
       return nextMove;
     }
     recordHistory(player1LastMove, player2LastMove);
@@ -296,8 +305,24 @@ public class StartBot implements Bot {
 
   public static void main(String[] args) {
     int test1 = 0, test2 = 1, test3 = 3;
-    StartBot bot = new StartBot();
-    int a = bot.getNextMove(test1, test2);
-    System.out.println(bot.history.get(1).get(0));
+    StartBot a = new StartBot();
+    a.roundNum++;
+    double b = a.test();
+    System.out.println("new: " + a.sumConstant + " old: " + b);
+    a.roundNum++;
+    b = a.test();
+    System.out.println("new: " + a.sumConstant + " old: " + b);
+    a.roundNum++;
+    b = a.test();
+    System.out.println("new: " + a.sumConstant + " old: " + b);
+    a.roundNum++;
+    b = a.test();
+    System.out.println("new: " + a.sumConstant + " old: " + b);
+    a.roundNum++;
+    b = a.test();
+    System.out.println("new: " + a.sumConstant + " old: " + b);
+
+    // int a = bot.getNextMove(test1, test2);
+    // System.out.println(bot.history.get(1).get(0));
   }
 }

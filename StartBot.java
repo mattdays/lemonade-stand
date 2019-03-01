@@ -139,7 +139,8 @@ public class StartBot implements Bot {
   }
 
   private int ea(int player1Last, int player2Last){
-    int current = this.history.get(0).get(-1);
+    int size = this.history.get(0).size();
+    int current = this.history.get(0).get(size - 1);
 
     if(this.worstFlag){
       if(this.worstTarget == 1){
@@ -174,7 +175,7 @@ public class StartBot implements Bot {
     //both i and j have high stick indices
     if(s1 > (f1 + this.tol)){
       if(s2 > (f2 + this.tol)){
-        int utility = this.scoreRound(this.history.get(0).get(-1), this.history.get(1).get(-1), this.history.get(2).get(-1));
+        int utility = this.scoreRound(this.history.get(0).get(size - 1), this.history.get(1).get(size - 1), this.history.get(2).get(size - 1));
         if (utility > 8) {
           this.stickCounter = true;
           return current;
@@ -202,7 +203,7 @@ public class StartBot implements Bot {
         return current;
       }
       else{
-        return this.history.get(2).get(-1);
+        return this.history.get(2).get(size - 1);
       }
     }
     else if((f2 > (s2 + this.tol)) && (f2 > (s1 + this.tol)) && (f2 > (f1 + this.tol))){
@@ -210,17 +211,17 @@ public class StartBot implements Bot {
         return current;
       }
       else{
-        return this.history.get(1).get(-1);
+        return this.history.get(1).get(size - 1);
       }
     }
 
     //Both i and j have high follow indices
     if( (f1 > (s1 + this.tol)) && (f2 > (s2 + this.tol)) && (f12 > f10) && (f21 > f20) ){
       if(f1 > f2){
-        return this.history.get(1).get(-1);
+        return this.history.get(1).get(size - 1);
       }
       else{
-        return this.history.get(2).get(-1);
+        return this.history.get(2).get(size - 1);
       }
     }
 
@@ -238,8 +239,6 @@ public class StartBot implements Bot {
         this.worstTarVal = player2Last;
         return player2Last;
       }
-
-
 
       // int size = this.historyP0.size();
       // int[] a = new int[5];
@@ -327,12 +326,13 @@ public class StartBot implements Bot {
     this.roundNum++;
     if (this.roundNum > 1) {
       recordHistory(player1LastMove, player2LastMove);
+      int nextMove = ea(player1LastMove, player2LastMove);
+      history.get(0).add(nextMove);
+      // historyP0.add(nextMove);
+      return nextMove;
     }
-
-    int nextMove = ea(player1LastMove, player2LastMove);
-    history.get(0).add(nextMove);
-    // historyP0.add(nextMove);
-    return nextMove;
+    Random generator = new Random();
+    return generator.nextInt(12) + 1;
   }
 
   /**

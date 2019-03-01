@@ -15,7 +15,7 @@ public class StartBot implements Bot {
   private ArrayList<Integer> historyP1 = new ArrayList<>();
   private ArrayList<Integer> historyP2 = new ArrayList<>();
   private ArrayList<ArrayList<Integer>> history = new ArrayList<ArrayList<Integer>>();
-  private Integer roundNum = 1;
+  private Integer roundNum = 0;
   private double responseR = 0.75;
   private double tol = 0.1;
   private double pScale = 0.5;
@@ -88,7 +88,8 @@ public class StartBot implements Bot {
   private double stickIndex(double sumConst, int player){
     double sum = 0;
     // Must do if check for which player to compare against
-    for(int k = 2; k < this.roundNum; k++){
+    System.out.println("RoundNum: " + this.roundNum);
+    for(int k = 2; k < this.roundNum - 1; k++){
       sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
                 Math.pow((minDist(history.get(player).get(k),
                   history.get(player).get(k - 1))), this.pScale);
@@ -98,7 +99,7 @@ public class StartBot implements Bot {
 
   private double followPair(double sumConst, int player1, int player2){
     double sum = 0;
-    for(int k = 2; k < this.roundNum; k++){
+    for(int k = 2; k < this.roundNum - 1; k++){
       int opp = oppSide(history.get(player2).get(k - 1));
       sum += (Math.pow(responseR, this.roundNum - 1 - k) / sumConst) *
               Math.pow((minDist(history.get(player1).get(k), opp)), this.pScale);
@@ -157,10 +158,10 @@ public class StartBot implements Bot {
     }
 
     double constant = sumConst();
-    double s1 = stickIndex(constant, player1Last);
-    double s2 = stickIndex(constant, player2Last);
-    double f1 = followIndex(constant, player1Last);
-    double f2 = followIndex(constant, player2Last);
+    double s1 = stickIndex(constant, 1);
+    double s2 = stickIndex(constant, 2);
+    double f1 = followIndex(constant, 1);
+    double f2 = followIndex(constant, 2);
 
     //stick conditional
     if((s1 > (s2 + this.tol)) && (s1 > (f1 + this.tol)) && (s1 > (f2 + this.tol))){
@@ -239,75 +240,7 @@ public class StartBot implements Bot {
         this.worstTarVal = player2Last;
         return player2Last;
       }
-
-      // int size = this.historyP0.size();
-      // int[] a = new int[5];
-      // int[] b = new int[5];
-      // int val;
-      // int left = 0, right = 0;
-    //   int bigger = Math.max(player1Last, player2Last);
-    //   for(int i = 1; i < 6; i++){
-    //     int temp1 = (bigger + i) % 12;
-    //     int temp2 = (bigger - i) % 12;
-    //     if(temp1 == 0){
-    //       temp1 = 12;
-    //     }
-    //     if(temp2 == 0){
-    //       temp2 = 12;
-    //     }
-    //     a[i] = temp1;
-    //     b[i] = temp2;
-    //   }
-    //   if(f1 > f2){
-    //     for(int i = 0; i < 5; i++){
-    //       if(size - i >= 0){
-    //         val = this.historyP2.get(size - i);
-    //         if(a.contains(val)){
-    //           if(bigger == player2Last){
-    //             left++;
-    //           }
-    //           else{
-    //             right++;
-    //           }
-    //         }
-    //         else{
-    //           if(bigger == player2Last){
-    //             left++;
-    //           }
-    //           else{
-    //             right++;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    //
-    //   else{
-    //     for(int i = 0; i < 5; i++){
-    //       if(size - i >= 0){
-    //         val = this.historyP1.get(size - i);
-    //         if(a.contains(val)){
-    //           if(bigger == player1Last){
-    //             left++;
-    //           }
-    //           else{
-    //             right++;
-    //           }
-    //         }
-    //         else{
-    //           if(bigger == player1Last){
-    //             left++;
-    //           }
-    //           else{
-    //             right++;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
     }
-    // int bias = Math.max(left, right);
-
     return current;
   }
 
@@ -331,8 +264,10 @@ public class StartBot implements Bot {
       // historyP0.add(nextMove);
       return nextMove;
     }
-    Random generator = new Random();
-    return generator.nextInt(12) + 1;
+    recordHistory(player1LastMove, player2LastMove);
+    int nextMove = this.generator.nextInt(12) + 1;
+    history.get(0).add(nextMove);
+    return nextMove;
   }
 
   /**
@@ -354,7 +289,9 @@ public class StartBot implements Bot {
   }
 
   public static void main(String[] args) {
-    // int di
-    // System.out.println("test");
+    int test1 = 0, test2 = 1, test3 = 3;
+    StartBot bot = new StartBot();
+    int a = bot.getNextMove(test1, test2);
+    System.out.println(bot.history.get(1).get(0));
   }
 }

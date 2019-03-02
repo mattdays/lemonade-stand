@@ -1,0 +1,31 @@
+- Abstract
+- Introduction
+    -Game
+    -Why it's important/motivating factor
+    -Outline
+- Background
+    -LSG
+        History
+            -Other alogriths
+        -Images/Diagrams
+    -Equilibrium
+    -Testing
+        -RandomBot
+        -StickBot
+        -FollowBot
+        -StubbornBot
+        -EA^2
+            -Stick Index
+            -Follow index
+- Experiments
+    -EA^2 implementation
+    -Test bot implementation
+- Results
+    - Graph & table
+-Conclusion
+    - RL TeamUP
+    - POMPD?
+-Acknowledgements:
+    -Charlie's idea to look at Pujhara
+-Contributions:
+    

@@ -17,7 +17,7 @@ public class StartBot implements Bot {
   private ArrayList<ArrayList<Integer>> history = new ArrayList<ArrayList<Integer>>();
   private Integer roundNum = 0;
   private float responseR = (float) 0.75;
-  private float tol = (float) 0.1;
+  private float tol = (float) 0.01;
   private float pScale = (float) 0.5;
   private boolean stickCounter = false;
   private boolean worstFlag = false;
@@ -133,11 +133,20 @@ public class StartBot implements Bot {
 
     if(player == 1){
       this.f1 *= this.responseR;
-      this.f1 -= Math.pow(minD, this.pScale) / this.sumConstant;
+      this.f1 -= Math.pow(minD, this.pScale) / this.sumConstant;    
+      // System.out.println("MinD: " + minD);
+      // double a0 = Math.pow(minD, this.pScale);
+      // System.out.println("a0: " + a0 + " a1: " + this.sumConstant);
+      // double a =  a0 / this.sumConstant;
+      // System.out.println("Being added: " + a);
+      // this.f1 -= a;
     }
     else if(player == 2){
       this.f2 *= this.responseR;
       this.f2 -= Math.pow(minD, this.pScale) / this.sumConstant;    
+      // double a = Math.pow(minD, this.pScale) / this.sumConstant;
+      // System.out.println(a);
+      // this.f2 -= a;
     }
     return true;
   }
@@ -183,19 +192,34 @@ public class StartBot implements Bot {
     // System.out.println("RoundNum: " + this.roundNum);
 
     //if roundNum <= 2:
+    float temps1, temps2;
     if (this.roundNum >= 4) {
       this.sumConstant += Math.pow(responseR, this.roundNum - 2 - 2);
+      temps1 = this.s1;
+      temps2 = this.s2;
       this.s1 *= this.responseR;
       this.s1 -= Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
       this.s2 *= this.responseR;
       this.s2 -= Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
-      followIndex(1);
-      followIndex(2);
+      if(temps1 == this.s1){
+        this.f1 *= this.responseR;
+        this.f1 -= Math.pow(6, this.pScale) / this.sumConstant;
+      }
+      else{
+        followIndex(1);
+      }
+      if(temps2 == this.s2){
+        this.f2 *= this.responseR;
+        this.f2 -= Math.pow(6, this.pScale) / this.sumConstant;
+      }
+      else{
+        followIndex(2);
+      }
     }
    
     //stick conditional
 
-    System.out.println("s1: " + s1 + " s2: " + s2 + " f1: " + f1 + " f2: " + f2);
+    // System.out.println("s1: " + s1 + " s2: " + s2 + " f1: " + f1 + " f2: " + f2);
     if((s1 > (s2 + this.tol)) && (s1 > (f1 + this.tol)) && (s1 > (f2 + this.tol))){
     // if((s1 > (s2 + this.tol))){
       //follow s1

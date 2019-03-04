@@ -55,7 +55,7 @@ public class StubbornBot implements Bot {
             totalUtility += utility;
             float avgUtility = ((float)this.totalUtility) / roundCount;
             if (avgUtility < 8) {
-                newPos = (this.historyP0.get(this.historyP0.size() - 1) + 4) % 12;
+                newPos = (this.historyP0.get(this.historyP0.size() - 1) + 3) % 12;
                 if (newPos == 0) {
                     newPos = 12;
                 }

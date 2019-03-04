@@ -16,8 +16,8 @@ public class StartBot implements Bot {
   private ArrayList<Integer> historyP2 = new ArrayList<>();
   private ArrayList<ArrayList<Integer>> history = new ArrayList<ArrayList<Integer>>();
   private Integer roundNum = 0;
-  private float responseR = (float) 0.75;
-  private float tol = (float) 0.01;
+  private float responseR = (float) 0.50;
+  private float tol = (float) 0.1;
   private float pScale = (float) 0.5;
   private boolean stickCounter = false;
   private boolean worstFlag = false;
@@ -195,11 +195,11 @@ public class StartBot implements Bot {
     float temps1, temps2;
     if (this.roundNum >= 4) {
       this.sumConstant += Math.pow(responseR, this.roundNum - 2 - 2);
-      temps1 = this.s1;
-      temps2 = this.s2;
       this.s1 *= this.responseR;
+      temps1 = this.s1;
       this.s1 -= Math.pow(minDist(history.get(1).get(roundNum - 2), history.get(1).get(roundNum - 3)), this.pScale) / this.sumConstant;
       this.s2 *= this.responseR;
+      temps2 = this.s2;
       this.s2 -= Math.pow(minDist(history.get(2).get(roundNum - 2), history.get(2).get(roundNum - 3)), this.pScale) / this.sumConstant;
       if(temps1 == this.s1){
         this.f1 *= this.responseR;
@@ -216,7 +216,6 @@ public class StartBot implements Bot {
         followIndex(2);
       }
     }
-   
     //stick conditional
 
     // System.out.println("s1: " + s1 + " s2: " + s2 + " f1: " + f1 + " f2: " + f2);

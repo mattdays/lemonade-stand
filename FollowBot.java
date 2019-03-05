@@ -30,13 +30,13 @@ public class FollowBot implements Bot {
       * @return the next action to play.
       */
     public int getNextMove(int player1LastMove, int player2LastMove) {
-      // if (generator.nextBoolean()) {
-      //   return oppSide(2);
-      // }
-      // else{
-      //   return oppSide(1);
-      // }
-      return oppSide(player2LastMove);
+      if (generator.nextBoolean()) {
+        return oppSide(player2LastMove);
+      }
+      else{
+        return oppSide(player1LastMove);
+      }
+      // return oppSide(player2LastMove);
     }
     
 }
